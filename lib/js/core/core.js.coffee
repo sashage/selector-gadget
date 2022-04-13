@@ -38,6 +38,7 @@ window.SelectorGadget = class SelectorGadget
   ignore_class: 'selectorgadget_ignore'
   unbound: false
   prediction_helper: new DomPredictionHelper()
+  targets: null
   restricted_elements: jQuerySG.map(['html', 'body', 'head', 'base'], (selector) -> jQuerySG(selector).get(0))
   
   makeBorders: (orig_elem, makeRed) ->
@@ -125,7 +126,8 @@ window.SelectorGadget = class SelectorGadget
       @b_top = @b_bottom = @b_left = @b_right = null
 
   selectable: (elem) ->
-    !@css_restriction || (@css_restriction && jQuerySG(elem).is(@css_restriction))
+    (!@css_restriction || (@css_restriction && jQuerySG(elem).is(@css_restriction))) &&
+      (!@targets || elem[0]?.tagName in @targets)
   
   sgMouseover: (e) ->
     gadget = e.data.self
@@ -280,7 +282,8 @@ window.SelectorGadget = class SelectorGadget
   
   setMode: (mode) ->
     if mode == 'browse'
-      @removeEventHandlers()
+      @unbindAndRemoveInterface()
+      @unbound = false
     else if mode == 'interactive'
       @setupEventHandlers()
     @clearSelected()
@@ -303,7 +306,15 @@ window.SelectorGadget = class SelectorGadget
       @path_output_field.value = prediction
     else
       @path_output_field.value = 'No valid path found.'
-  
+
+    window.dispatchEvent(new CustomEvent('selectorgadget.update', { detail: { prediction, @targets } }))
+    prediction
+
+  updatePath: (path) ->
+    self = @
+    self.clearSelected()
+    self.suggestPredicted(path)
+
   refreshFromPath: (e) ->
     self = (e && e.data && e.data.self) || @
     path = self.path_output_field.value;
@@ -406,8 +417,9 @@ window.SelectorGadget = class SelectorGadget
     @path_output_field = path.get(0)
   
   removeInterface: (e) ->
-    @sg_div.remove()
-    @sg_div = null
+    if @sg_div
+      @sg_div.remove()
+      @sg_div = null
   
   unbind: (e) ->
     self = (e && e.data && e.data.self) || @
@@ -441,8 +453,10 @@ window.SelectorGadget = class SelectorGadget
       window.selector_gadget = new SelectorGadget()
       window.selector_gadget.makeInterface()
       window.selector_gadget.clearEverything()
-      window.selector_gadget.setMode('interactive')
+      window.selector_gadget.setMode(options?.mode || 'interactive')
       window.selector_gadget.analytics() unless options?.analytics == false
+      window.selector_gadget.targets = options.targets if options?.targets
+      window.selector_gadget.updatePath(options.path) if options?.path
     else if window.selector_gadget.unbound
       window.selector_gadget.rebindAndMakeInterface()
     else

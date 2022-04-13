@@ -26,7 +26,8 @@
 
 
 (function() {
-  var SelectorGadget;
+  var SelectorGadget,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   window.SelectorGadget = SelectorGadget = (function() {
 
@@ -59,6 +60,8 @@
     SelectorGadget.prototype.unbound = false;
 
     SelectorGadget.prototype.prediction_helper = new DomPredictionHelper();
+
+    SelectorGadget.prototype.targets = null;
 
     SelectorGadget.prototype.restricted_elements = jQuerySG.map(['html', 'body', 'head', 'base'], function(selector) {
       return jQuerySG(selector).get(0);
@@ -158,7 +161,8 @@
     };
 
     SelectorGadget.prototype.selectable = function(elem) {
-      return !this.css_restriction || (this.css_restriction && jQuerySG(elem).is(this.css_restriction));
+      var _ref, _ref1;
+      return (!this.css_restriction || (this.css_restriction && jQuerySG(elem).is(this.css_restriction))) && (!this.targets || (_ref = (_ref1 = elem[0]) != null ? _ref1.tagName : void 0, __indexOf.call(this.targets, _ref) >= 0));
     };
 
     SelectorGadget.prototype.sgMouseover = function(e) {
@@ -374,7 +378,8 @@
 
     SelectorGadget.prototype.setMode = function(mode) {
       if (mode === 'browse') {
-        this.removeEventHandlers();
+        this.unbindAndRemoveInterface();
+        this.unbound = false;
       } else if (mode === 'interactive') {
         this.setupEventHandlers();
       }
@@ -403,10 +408,24 @@
 
     SelectorGadget.prototype.setPath = function(prediction) {
       if (prediction && prediction.length > 0) {
-        return this.path_output_field.value = prediction;
+        this.path_output_field.value = prediction;
       } else {
-        return this.path_output_field.value = 'No valid path found.';
+        this.path_output_field.value = 'No valid path found.';
       }
+      window.dispatchEvent(new CustomEvent('selectorgadget.update', {
+        detail: {
+          prediction: prediction,
+          targets: this.targets
+        }
+      }));
+      return prediction;
+    };
+
+    SelectorGadget.prototype.updatePath = function(path) {
+      var self;
+      self = this;
+      self.clearSelected();
+      return self.suggestPredicted(path);
     };
 
     SelectorGadget.prototype.refreshFromPath = function(e) {
@@ -549,8 +568,10 @@
     };
 
     SelectorGadget.prototype.removeInterface = function(e) {
-      this.sg_div.remove();
-      return this.sg_div = null;
+      if (this.sg_div) {
+        this.sg_div.remove();
+        return this.sg_div = null;
+      }
     };
 
     SelectorGadget.prototype.unbind = function(e) {
@@ -594,9 +615,15 @@
         window.selector_gadget = new SelectorGadget();
         window.selector_gadget.makeInterface();
         window.selector_gadget.clearEverything();
-        window.selector_gadget.setMode('interactive');
+        window.selector_gadget.setMode((options != null ? options.mode : void 0) || 'interactive');
         if ((options != null ? options.analytics : void 0) !== false) {
           window.selector_gadget.analytics();
+        }
+        if (options != null ? options.targets : void 0) {
+          window.selector_gadget.targets = options.targets;
+        }
+        if (options != null ? options.path : void 0) {
+          window.selector_gadget.updatePath(options.path);
         }
       } else if (window.selector_gadget.unbound) {
         window.selector_gadget.rebindAndMakeInterface();
