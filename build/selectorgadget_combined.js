@@ -11013,7 +11013,7 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
       if (escaped && escaped.length > 0) {
         path += '#' + escaped;
       }
-      if (node.className) {
+      if (node.className && typeof node.className === "string") {
         _ref = node.className.split(" ");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cssName = _ref[_i];
