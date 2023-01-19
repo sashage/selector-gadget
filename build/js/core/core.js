@@ -407,17 +407,23 @@
     };
 
     SelectorGadget.prototype.setPath = function(prediction) {
+      var dispatchEvent = this.path_output_field.value || prediction;
+
       if (prediction && prediction.length > 0) {
         this.path_output_field.value = prediction;
       } else {
         this.path_output_field.value = 'No valid path found.';
       }
-      window.dispatchEvent(new CustomEvent('selectorgadget.update', {
-        detail: {
-          prediction: prediction,
-          targets: this.targets
-        }
-      }));
+
+      if (dispatchEvent) {
+        window.dispatchEvent(new CustomEvent('selectorgadget.update', {
+          detail: {
+            prediction: prediction,
+            targets: this.targets
+          }
+        }));
+      }
+
       return prediction;
     };
 
@@ -425,7 +431,8 @@
       var self;
       self = this;
       self.clearSelected();
-      return self.suggestPredicted(path);
+      self.suggestPredicted(path);
+      return self.setPath(path);
     };
 
     SelectorGadget.prototype.refreshFromPath = function(e) {

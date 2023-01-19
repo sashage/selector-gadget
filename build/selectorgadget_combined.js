@@ -11846,17 +11846,23 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
     };
 
     SelectorGadget.prototype.setPath = function(prediction) {
+      var dispatchEvent = this.path_output_field.value || prediction;
+
       if (prediction && prediction.length > 0) {
         this.path_output_field.value = prediction;
       } else {
         this.path_output_field.value = 'No valid path found.';
       }
-      window.dispatchEvent(new CustomEvent('selectorgadget.update', {
-        detail: {
-          prediction: prediction,
-          targets: this.targets
-        }
-      }));
+
+      if (dispatchEvent) {
+        window.dispatchEvent(new CustomEvent('selectorgadget.update', {
+          detail: {
+            prediction: prediction,
+            targets: this.targets
+          }
+        }));
+      }
+
       return prediction;
     };
 
@@ -11864,7 +11870,8 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
       var self;
       self = this;
       self.clearSelected();
-      return self.suggestPredicted(path);
+      self.suggestPredicted(path);
+      return self.setPath(path);
     };
 
     SelectorGadget.prototype.refreshFromPath = function(e) {
