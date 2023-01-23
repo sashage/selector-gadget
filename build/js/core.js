@@ -22,15 +22,13 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*/
-
+ */
 
 (function() {
   var SelectorGadget,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   window.SelectorGadget = SelectorGadget = (function() {
-
     function SelectorGadget() {}
 
     SelectorGadget.prototype.border_width = 5;
@@ -161,8 +159,8 @@
     };
 
     SelectorGadget.prototype.selectable = function(elem) {
-      var _ref, _ref1;
-      return (!this.css_restriction || (this.css_restriction && jQuerySG(elem).is(this.css_restriction))) && (!this.targets || (_ref = (_ref1 = elem[0]) != null ? _ref1.tagName : void 0, __indexOf.call(this.targets, _ref) >= 0));
+      var ref, ref1;
+      return (!this.css_restriction || (this.css_restriction && jQuerySG(elem).is(this.css_restriction))) && (!this.targets || (ref = (ref1 = elem[0]) != null ? ref1.tagName : void 0, indexOf.call(this.targets, ref) >= 0));
     };
 
     SelectorGadget.prototype.sgMouseover = function(e) {
@@ -229,7 +227,7 @@
     };
 
     SelectorGadget.prototype.highlightIframe = function(elem, click) {
-      var block, instructions, p, self, src, target;
+      var block, e, instructions, p, self, src, target;
       p = elem.offset();
       self = this;
       target = jQuerySG(click.target);
@@ -250,7 +248,8 @@
       src = null;
       try {
         src = elem.contents().get(0).location.href;
-      } catch (e) {
+      } catch (error) {
+        e = error;
         src = elem.attr("src");
       }
       instructions.append(jQuerySG("<a target='_top'>click here to open it</a>").attr("href", src));
@@ -407,14 +406,13 @@
     };
 
     SelectorGadget.prototype.setPath = function(prediction) {
-      var dispatchEvent = this.path_output_field.value || prediction;
-
+      var dispatchEvent;
+      dispatchEvent = this.path_output_field.value || prediction;
       if (prediction && prediction.length > 0) {
         this.path_output_field.value = prediction;
       } else {
         this.path_output_field.value = 'No valid path found.';
       }
-
       if (dispatchEvent) {
         window.dispatchEvent(new CustomEvent('selectorgadget.update', {
           detail: {
@@ -423,7 +421,6 @@
           }
         }));
       }
-
       return prediction;
     };
 
