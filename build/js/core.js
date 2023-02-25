@@ -405,12 +405,9 @@
       }
     };
 
-    SelectorGadget.prototype.setPath = function(prediction, dispatch) {
+    SelectorGadget.prototype.setPath = function(prediction) {
       var dispatchEvent;
-      if (dispatch == null) {
-        dispatch = true;
-      }
-      dispatchEvent = dispatch && (this.path_output_field.value || prediction);
+      dispatchEvent = this.path_output_field.value || prediction;
       if (prediction && prediction.length > 0) {
         this.path_output_field.value = prediction;
       } else {
@@ -432,7 +429,7 @@
       self = this;
       self.clearSelected();
       self.suggestPredicted(path);
-      return self.setPath(path, false);
+      return self.setPath(path);
     };
 
     SelectorGadget.prototype.refreshFromPath = function(e) {

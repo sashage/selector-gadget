@@ -301,8 +301,8 @@ window.SelectorGadget = class SelectorGadget
         else
           @clear_button.attr('value', 'Clear')
 
-  setPath: (prediction, dispatch = true) ->
-    dispatchEvent = dispatch && (@path_output_field.value || prediction)
+  setPath: (prediction) ->
+    dispatchEvent = @path_output_field.value || prediction
 
     if prediction && prediction.length > 0
       @path_output_field.value = prediction
@@ -318,7 +318,7 @@ window.SelectorGadget = class SelectorGadget
     self = @
     self.clearSelected()
     self.suggestPredicted(path)
-    self.setPath(path, false)
+    self.setPath(path)
 
   refreshFromPath: (e) ->
     self = (e && e.data && e.data.self) || @
