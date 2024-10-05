@@ -6,6 +6,7 @@ gem 'coffee-script'
 gem 'sass'
 gem 'uglifier'
 gem 'yui-compressor'
+gem 'erb'
 
 gem 'guard-coffeescript', :require => false
 gem 'guard-sass', :require => false
