@@ -38,4 +38,10 @@ guard :shell, :all_on_start => true do
       file.print Uglifier.compile(File.read('build/selectorgadget_combined.js'))
     end
   end
+
+  # Run build_chrome.sh after JS compression
+  watch %r{build/selectorgadget_combined.min.js} do |m|
+    puts "Running build_chrome.sh"
+    system("bin/bundle_chrome.sh")
+  end
 end

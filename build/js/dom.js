@@ -28,7 +28,9 @@
   var DomPredictionHelper;
 
   window.DomPredictionHelper = DomPredictionHelper = (function() {
-    function DomPredictionHelper() {}
+    function DomPredictionHelper() {
+      this.priorityWords = ['add', 'cart', 'remove', 'important', 'main', 'primary', 'essential'];
+    }
 
     DomPredictionHelper.prototype.recursiveNodes = function(e) {
       var n;
@@ -253,7 +255,7 @@
     };
 
     DomPredictionHelper.prototype.tokenPriorities = function(tokens) {
-      var epsilon, first, i, k, len, priorities, second, token;
+      var epsilon, first, i, k, l, len, len1, priorities, ref, second, token, word;
       epsilon = 0.001;
       priorities = new Array();
       i = 0;
@@ -271,7 +273,15 @@
           priorities[i] = 4;
         } else if (first === '.') {
           priorities[i] = 5;
-        } else if (first = '#') {
+          ref = this.priorityWords;
+          for (l = 0, len1 = ref.length; l < len1; l++) {
+            word = ref[l];
+            if (token.toLowerCase().includes(word)) {
+              priorities[i] = 5.5;
+              break;
+            }
+          }
+        } else if (first === '#') {
           priorities[i] = 6;
           if (token.match(/\d{3,}/)) {
             priorities[i] = 2.5;

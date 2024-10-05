@@ -23,8 +23,10 @@
  THE SOFTWARE.
 ###
 
-
 window.DomPredictionHelper = class DomPredictionHelper
+  constructor: ->
+    @priorityWords = ['add','cart','remove','important', 'main', 'primary', 'essential']
+
   recursiveNodes: (e) ->
     if e.nodeName && e.parentNode && e != document.body
       n = @recursiveNodes(e.parentNode)
@@ -69,7 +71,6 @@ window.DomPredictionHelper = class DomPredictionHelper
       if e
         siblings = @siblingsWithoutTextNodes(e)
         if e.nodeName.toLowerCase() != "body"
-          # Only look at 2 previous siblings.
           j = if siblings.length - 2 < 0 then 0 else siblings.length - 2
           while j < siblings.length
             break if siblings[j] == e
@@ -90,7 +91,7 @@ window.DomPredictionHelper = class DomPredictionHelper
         if cssName && escaped.length > 0
           path += '.' + escaped
 
-    if node.nodeName.toLowerCase() != "body" # nth-child needs to be last.
+    if node.nodeName.toLowerCase() != "body"
       path += ':nth-child(' + (@childElemNumber(node) + 1) + ')'
 
     path
@@ -134,7 +135,6 @@ window.DomPredictionHelper = class DomPredictionHelper
     tokens.push(word) if word.length > 0
     tokens
 
-  # Same as tokenizeCss, except that siblings are treated as single tokens.
   tokenizeCssForDiff: (css_string) ->
     combined_tokens = []
     block = []
@@ -158,7 +158,6 @@ window.DomPredictionHelper = class DomPredictionHelper
       out += inverted[character]
     @cleanCss out
 
-  # Encode css paths for diff using unicode codepoints to allow for a large number of tokens.
   encodeCssForDiff: (strings, existing_tokens) ->
     codepoint = 50
     strings_out = []
@@ -181,7 +180,7 @@ window.DomPredictionHelper = class DomPredictionHelper
       if first == ':' && second == 'n' # :nth-child
         priorities[i] = 0
       else if first == '>' # >
-        priorities[i] = 2;
+        priorities[i] = 2
       else if first == '+' || first == '~' # + and ~
         priorities[i] = 3
       else if first != ':' && first != '.' && first != '#' && first != ' ' && 
@@ -189,7 +188,11 @@ window.DomPredictionHelper = class DomPredictionHelper
           priorities[i] = 4
       else if first == '.' # classes
         priorities[i] = 5
-      else if first = '#' # ids
+        for word in @priorityWords
+          if token.toLowerCase().includes(word)
+            priorities[i] = 5.5
+            break
+      else if first == '#' # ids
         priorities[i] = 6
         if token.match(/\d{3,}/)
           priorities[i] = 2.5
@@ -207,7 +210,7 @@ window.DomPredictionHelper = class DomPredictionHelper
     tmp.sort (a,b) -> a.value - b.value
     for i in [0...priorities.length]
       ordering[i] = tmp[i].original
-    ordering;
+    ordering
 
   simplifyCss: (css, selected, rejected) ->
     parts = @tokenizeCss(css)
@@ -239,22 +242,21 @@ window.DomPredictionHelper = class DomPredictionHelper
             false
     @cleanCss best_so_far
 
-  # Remove some elements depending on whether this is a sibling selector or not, and put them back if the block returns false.
   _removeElements: (part, parts, firstChar, callback) ->
     if firstChar == '+' || firstChar == '~'
       look_back_index = @positionOfSpaceBeforeIndexOrLineStart(part, parts)
     else
       look_back_index = part
 
-    tmp = parts.slice(look_back_index, part + 1) # Save a copy of these parts.
+    tmp = parts.slice(look_back_index, part + 1)
     for j in [look_back_index..part]
-      parts[j] = '' # Clear it out.
+      parts[j] = ''
 
     selector = @cleanCss(parts.join(''))
 
     if selector == '' || !callback(selector)
       for j in [look_back_index..part]
-        parts[j] = tmp[j - look_back_index] # Put it back.
+        parts[j] = tmp[j - look_back_index]
 
     parts
 
@@ -265,7 +267,6 @@ window.DomPredictionHelper = class DomPredictionHelper
     i = 0 if i < 0
     i
 
-  # Has to handle parts with zero length.
   wouldLeaveFreeFloatingNthChild: (parts, part) ->
     space_is_on_left = nth_child_is_on_right = false
 
@@ -281,7 +282,6 @@ window.DomPredictionHelper = class DomPredictionHelper
 
     space_is_on_left && nth_child_is_on_right
 
-  # Not intended for user CSS, does destructive sibling removal.  Expects strings to be escaped.
   cleanCss: (css) ->
     cleaned_css = css
     last_cleaned_css = null
@@ -293,7 +293,6 @@ window.DomPredictionHelper = class DomPredictionHelper
                                 replace(/^>\s*/g, '').replace(/[\+\~\>]\s*,/g, ',').replace(/[\+\~]\s*>/g, '>').replace(/\s*(,\s*)+/g, ' , ')
     cleaned_css
 
-  # Takes wrapped
   getPathsFor: (nodeset) ->
     out = []
     for node in nodeset
@@ -301,17 +300,14 @@ window.DomPredictionHelper = class DomPredictionHelper
         out.push @pathOf(node)
     out
 
-  # Takes wrapped
   predictCss: (s, r) ->
     return '' if s.length == 0
     selected_paths = @getPathsFor(s)
     css = @cssDiff(selected_paths)
     simplest = @simplifyCss(css, s, r)
 
-    # Do we get off easy?
     return simplest if simplest.length > 0
 
-    # Okay, then make a union and possibly try to reduce subsets.
     union = ''
     for selected in s
       union = @pathOf(selected) + ", " + union
@@ -319,7 +315,6 @@ window.DomPredictionHelper = class DomPredictionHelper
 
     @simplifyCss(union, s, r)
 
-  # Assumes list is jQuery node-set.  Todo: There is room for memoization here.
   selectorGets: (type, list, the_selector) ->
     return false if list.length == 0 && type == 'all'
     return true if list.length == 0 && type == 'none'
@@ -356,7 +351,6 @@ window.DomPredictionHelper = class DomPredictionHelper
 
     out + @cssToXPathBlockHelper(css_block)
 
-  # Process a block (html entity, class(es), id, :nth-child()) of css
   cssToXPathBlockHelper: (css_block) ->
     return '//' if css_block.length == 0
     out = '//'
@@ -374,7 +368,6 @@ window.DomPredictionHelper = class DomPredictionHelper
       rest = current.substring(1)
 
       if first == ':'
-        # We only support :nth-child(n) at the moment.
         if re = rest.match(/^nth-child\((\d+)\)$/)
           expressions.push('(((count(preceding-sibling::*) + 1) = ' + re[1] + ') and parent::*)')
       else if first == '.'

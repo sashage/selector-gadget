@@ -1,0 +1,4 @@
+# pack-refs with: peeled fully-peeled sorted 
+7193fac560f2adda12fb1f8860b80c53a2fbb68d refs/heads/master
+303503e72ad18566de3f4eee56614e71b31c8329 refs/heads/ruby1.8
+cc931c022093083dc7d8c2a6a39c5f6bb6ca77f4 refs/heads/tmp

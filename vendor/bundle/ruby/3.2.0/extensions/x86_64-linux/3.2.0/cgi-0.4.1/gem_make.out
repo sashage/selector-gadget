@@ -1,0 +1,18 @@
+current directory: /mnt/data/Projects/own/codeart-selectorgadget/vendor/bundle/ruby/3.2.0/gems/cgi-0.4.1/ext/cgi/escape
+/usr/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /mnt/data/Projects/own/codeart-selectorgadget/vendor/bundle/ruby/3.2.0/gems/cgi-0.4.1/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20241005-288422-bou9fs sitelibdir\=./.gem.20241005-288422-bou9fs clean
+
+current directory: /mnt/data/Projects/own/codeart-selectorgadget/vendor/bundle/ruby/3.2.0/gems/cgi-0.4.1/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20241005-288422-bou9fs sitelibdir\=./.gem.20241005-288422-bou9fs
+compiling escape.c
+linking shared-object cgi/escape.so
+
+current directory: /mnt/data/Projects/own/codeart-selectorgadget/vendor/bundle/ruby/3.2.0/gems/cgi-0.4.1/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20241005-288422-bou9fs sitelibdir\=./.gem.20241005-288422-bou9fs install
+/usr/bin/install -c -m 0755 escape.so ./.gem.20241005-288422-bou9fs/cgi
+
+current directory: /mnt/data/Projects/own/codeart-selectorgadget/vendor/bundle/ruby/3.2.0/gems/cgi-0.4.1/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20241005-288422-bou9fs sitelibdir\=./.gem.20241005-288422-bou9fs clean
