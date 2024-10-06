@@ -27,12 +27,5 @@
       "38": "icons/action38x38.png"
     },
     "default_title": "SelectorGadget"
-  },
-  "content_scripts": [
-    {
-      "matches": ["http://*/*", "https://*/*"],
-      "css": ["combined.css"],
-      "js": ["combined.js"]
-    }
-  ]
+  }
 }
