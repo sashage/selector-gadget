@@ -2,3 +2,9 @@
 .DS_Store
 extension.zip
 .sass-cache
+chrome/
+build/
+build/selectorgadget_combined.js
+build/selectorgadget_combined.min.js
+build/js/core.js
+chrome/combined.js
