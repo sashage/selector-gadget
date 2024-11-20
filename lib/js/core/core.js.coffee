@@ -40,7 +40,7 @@ window.SelectorGadget = class SelectorGadget
   prediction_helper: new DomPredictionHelper()
   targets: null
   restricted_elements: jQuerySG.map(['html', 'body', 'head', 'base'], (selector) -> jQuerySG(selector).get(0))
-  
+
   makeBorders: (orig_elem, makeRed) ->
     @removeBorders()
     @setupBorders()
@@ -84,7 +84,7 @@ window.SelectorGadget = class SelectorGadget
         @b_bottom.removeClass('selectorgadget_border_red')
         @b_left.removeClass('selectorgadget_border_red')
         @b_right.removeClass('selectorgadget_border_red')
-
+  
     @showBorders()
   
   px: (p) -> p + 'px'
@@ -101,7 +101,7 @@ window.SelectorGadget = class SelectorGadget
       @b_bottom.hide()
       @b_left.hide()
       @b_right.hide()
-
+  
   setupBorders: ->
     unless @.b_top
       width = @border_width + 'px'
@@ -110,7 +110,7 @@ window.SelectorGadget = class SelectorGadget
       @b_left = jQuerySG('<div>').addClass('selectorgadget_border').css('width', width).hide().bind("mousedown.sg", { 'self': @ }, @sgMousedown)
       @b_right = jQuerySG('<div>').addClass('selectorgadget_border').css('width', width).hide().bind("mousedown.sg", { 'self': @ }, @sgMousedown)
       @addBorderToDom()
-
+  
   addBorderToDom: ->
     document.body.appendChild @b_top.get(0)
     document.body.appendChild @b_bottom.get(0)
@@ -124,7 +124,7 @@ window.SelectorGadget = class SelectorGadget
       @b_left.remove()
       @b_right.remove()
       @b_top = @b_bottom = @b_left = @b_right = null
-
+  
   selectable: (elem) ->
     (!@css_restriction || (@css_restriction && jQuerySG(elem).is(@css_restriction))) &&
       (!@targets || elem[0]?.tagName in @targets)
@@ -134,7 +134,7 @@ window.SelectorGadget = class SelectorGadget
     return true if gadget.unbound
     return false if @ == document.body || @ == document.body.parentNode
     self = jQuerySG(@)
-
+  
     gadget.unhighlightIframes()
     gadget.highlightIframe(self, e) if self.is("iframe")
   
@@ -164,7 +164,7 @@ window.SelectorGadget = class SelectorGadget
     elem = jQuerySG(@)
     gadget.removeBorders()
     false
-
+  
   highlightIframe: (elem, click) ->
     p = elem.offset()
     self = @
@@ -172,8 +172,8 @@ window.SelectorGadget = class SelectorGadget
     block = jQuerySG('<div>').css('position', 'absolute').css('z-index', '99998').css('width', @px(elem.outerWidth())).
                               css('height', @px(elem.outerHeight())).css('top', @px(p.top)).css('left', this.px(p.left)).
                               css('background-color', '#AAA').css('opacity', '0.6').addClass("selectorgadget_iframe").addClass('selectorgadget_clean')
-
-    instructions = jQuerySG("<div><span>This is an iframe.  To select in it, </span></div>").
+  
+    instructions = jQuerySG("<div><span>This is an iframe. To select in it, </span></div>").
                    addClass("selectorgadget_iframe_info").
                    addClass("selectorgadget_iframe").
                    addClass('selectorgadget_clean')
@@ -183,7 +183,7 @@ window.SelectorGadget = class SelectorGadget
                      top: this.px(p.top + (elem.outerHeight() / 4.0)),
                      left: this.px(p.left + (elem.outerWidth() - 200) / 2.0),
                      height: "150px"
-
+  
     src = null
     try
       src = elem.contents().get(0).location.href
@@ -194,7 +194,7 @@ window.SelectorGadget = class SelectorGadget
     document.body.appendChild(instructions.get(0))
     block.click -> target.mousedown() if self.selectable(target)
     document.body.appendChild(block.get(0))
-
+  
   unhighlightIframes: (elem, click) ->
     jQuerySG(".selectorgadget_iframe").remove()
   
@@ -208,7 +208,7 @@ window.SelectorGadget = class SelectorGadget
       # They have clicked on one of our floating borders, target the element that we are bordering.
       elem = elem.target_elem || elem
       w_elem = jQuerySG(elem)
-
+  
     return if elem == document.body || elem == document.body.parentNode
   
     if gadget.special_mode != 'd'
@@ -218,12 +218,12 @@ window.SelectorGadget = class SelectorGadget
         w_elem = jQuerySG(elem)
     else
       gadget.blockClicksOn(elem) if jQuerySG('.selectorgadget_selected', @).get(0) # Don't allow selection of elements that have a selected child.
-
+  
     if !gadget.selectable(w_elem)
       gadget.removeBorders()
       gadget.blockClicksOn(elem)
       return false
-
+  
     if w_elem.hasClass('selectorgadget_selected')
       w_elem.removeClass('selectorgadget_selected')
       gadget.selected.splice(jQuerySG.inArray(elem, gadget.selected), 1)
@@ -236,7 +236,7 @@ window.SelectorGadget = class SelectorGadget
     else
       w_elem.addClass('selectorgadget_selected')
       gadget.selected.push(elem)
-
+  
     gadget.clearSuggested()
     prediction = gadget.prediction_helper.predictCss(jQuerySG(gadget.selected), jQuerySG(gadget.rejected.concat(gadget.restricted_elements)))
     gadget.suggestPredicted(prediction)
@@ -245,7 +245,7 @@ window.SelectorGadget = class SelectorGadget
     gadget.removeBorders()
     gadget.blockClicksOn(elem)
     w_elem.trigger("mouseover.sg", { 'self': gadget }) #  Refresh the borders by triggering a new mouseover event.
-
+  
     false
   
   setupEventHandlers: ->
@@ -262,7 +262,7 @@ window.SelectorGadget = class SelectorGadget
     if e.keyCode == 16 || e.keyCode == 68 # shift or d
       gadget.special_mode = 'd'
       gadget.removeBorders()
-
+  
   clearActionKeys: (e) ->
     gadget = e.data.self
     return true if gadget.unbound
@@ -294,32 +294,32 @@ window.SelectorGadget = class SelectorGadget
       jQuerySG(prediction).each ->
         count += 1
         jQuerySG(@).addClass('selectorgadget_suggested') if !jQuerySG(@).hasClass('selectorgadget_selected') && !jQuerySG(@).hasClass('selectorgadget_ignore') && !jQuerySG(@).hasClass('selectorgadget_rejected')
-
+  
       if @clear_button
         if count > 0
           @clear_button.attr('value', 'Clear (' + count + ')')
         else
           @clear_button.attr('value', 'Clear')
-
+  
   setPath: (prediction) ->
     dispatchEvent = @path_output_field.value || prediction
-
+  
     if prediction && prediction.length > 0
       @path_output_field.value = prediction
     else
       @path_output_field.value = 'No valid path found.'
-
+  
     if dispatchEvent
       window.dispatchEvent(new CustomEvent('selectorgadget.update', { detail: { prediction, @targets } }))
-
+  
     prediction
-
+  
   updatePath: (path) ->
     self = @
     self.clearSelected()
     self.suggestPredicted(path)
     self.setPath(path)
-
+  
   refreshFromPath: (e) ->
     self = (e && e.data && e.data.self) || @
     path = self.path_output_field.value;
@@ -331,7 +331,7 @@ window.SelectorGadget = class SelectorGadget
     self = (e && e.data && e.data.self) || @
     path = self.path_output_field.value
     return if path == 'No valid path found.'
-    prompt "The CSS selector '#{path}' as an XPath is shown below.  Please report any bugs that you find with this converter.",
+    prompt "The CSS selector '#{path}' as an XPath is shown below. Please report any bugs that you find with this converter.",
            self.prediction_helper.cssToXPath(path)
   
   clearSelected: (e) ->
@@ -384,7 +384,7 @@ window.SelectorGadget = class SelectorGadget
       head.appendChild(s)
     else
       document.body.appendChild(s)
-
+  
   makeInterface: ->
     @sg_div = jQuerySG('<div>').attr('id', 'selectorgadget_main').addClass('selectorgadget_bottom').addClass('selectorgadget_ignore')
   
@@ -394,8 +394,9 @@ window.SelectorGadget = class SelectorGadget
       @updateRemoteInterface()
     else
       @makeStandardInterface()
-
+  
     jQuerySG('body').append(@sg_div)
+    new MenuPanel() # Initialize the MenuPanel
   
   makeStandardInterface: ->
     self = @;
@@ -418,7 +419,7 @@ window.SelectorGadget = class SelectorGadget
     @sg_div.append(jQuerySG('<input type="button" value="?"/>').bind("click", {'self': @}, @showHelp).addClass('selectorgadget_ignore').addClass('selectorgadget_input_field'))
   
     @sg_div.append(jQuerySG('<input type="button" value="X"/>').bind("click", {'self': @}, @unbindAndRemoveInterface).addClass('selectorgadget_ignore').addClass('selectorgadget_input_field'))
-
+  
     @path_output_field = path.get(0)
   
   removeInterface: (e) ->
@@ -455,16 +456,19 @@ window.SelectorGadget = class SelectorGadget
   
   @toggle: (options) ->
     if !window.selector_gadget
+      window.sg_options = {
+        remote_interface: '/lib/menu_panel/sg_interface.js' # Set the path to the remote interface
+      }
       window.selector_gadget = new SelectorGadget()
       window.selector_gadget.makeInterface()
       window.selector_gadget.clearEverything()
       window.selector_gadget.setMode(options?.mode || 'interactive')
       window.selector_gadget.analytics() unless options?.analytics == false
       window.selector_gadget.targets = options.targets if options?.targets
-      window.selector_gadget.updatePath(options.path) if options?.path
+      window.selector_gadget.updatePath(options?.path) if options?.path
     else if window.selector_gadget.unbound
       window.selector_gadget.rebindAndMakeInterface()
     else
       window.selector_gadget.unbindAndRemoveInterface()
-
+  
     jQuerySG('.selector_gadget_loading').remove()

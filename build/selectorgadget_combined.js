@@ -11684,7 +11684,7 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
       self = this;
       target = jQuerySG(click.target);
       block = jQuerySG('<div>').css('position', 'absolute').css('z-index', '99998').css('width', this.px(elem.outerWidth())).css('height', this.px(elem.outerHeight())).css('top', this.px(p.top)).css('left', this.px(p.left)).css('background-color', '#AAA').css('opacity', '0.6').addClass("selectorgadget_iframe").addClass('selectorgadget_clean');
-      instructions = jQuerySG("<div><span>This is an iframe.  To select in it, </span></div>").addClass("selectorgadget_iframe_info").addClass("selectorgadget_iframe").addClass('selectorgadget_clean');
+      instructions = jQuerySG("<div><span>This is an iframe. To select in it, </span></div>").addClass("selectorgadget_iframe_info").addClass("selectorgadget_iframe").addClass('selectorgadget_clean');
       instructions.css({
         width: "200px",
         border: "1px solid #888"
@@ -11900,7 +11900,7 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
       if (path === 'No valid path found.') {
         return;
       }
-      return prompt("The CSS selector '" + path + "' as an XPath is shown below.  Please report any bugs that you find with this converter.", self.prediction_helper.cssToXPath(path));
+      return prompt("The CSS selector '" + path + "' as an XPath is shown below. Please report any bugs that you find with this converter.", self.prediction_helper.cssToXPath(path));
     };
 
     SelectorGadget.prototype.clearSelected = function(e) {
@@ -11986,7 +11986,8 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
       } else {
         this.makeStandardInterface();
       }
-      return jQuerySG('body').append(this.sg_div);
+      jQuerySG('body').append(this.sg_div);
+      return new MenuPanel();
     };
 
     SelectorGadget.prototype.makeStandardInterface = function() {
@@ -12068,6 +12069,9 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
 
     SelectorGadget.toggle = function(options) {
       if (!window.selector_gadget) {
+        window.sg_options = {
+          remote_interface: '/lib/menu_panel/sg_interface.js'
+        };
         window.selector_gadget = new SelectorGadget();
         window.selector_gadget.makeInterface();
         window.selector_gadget.clearEverything();
@@ -12079,7 +12083,7 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
           window.selector_gadget.targets = options.targets;
         }
         if (options != null ? options.path : void 0) {
-          window.selector_gadget.updatePath(options.path);
+          window.selector_gadget.updatePath(options != null ? options.path : void 0);
         }
       } else if (window.selector_gadget.unbound) {
         window.selector_gadget.rebindAndMakeInterface();
